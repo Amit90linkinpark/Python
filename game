@@ -1,1 +1,145 @@
+#Dream Project 
 
+#import 
+import pygame 
+import random
+pygame.init()
+
+#screen made
+screen_width=900
+screen_height=600
+gameWindow=pygame.display.set_mode((screen_width, screen_height)) 
+
+# screen a nam dilam
+pygame.display.set_caption("Amit Project")
+
+#display Update korlam 
+pygame.display.update()
+
+# Game a loop start 
+def game_loop():
+    
+    
+
+    #FPS difind
+    clock=pygame.time.Clock()
+    #Color
+    white=(255,255,255)
+    red=(255,0,0)
+    black=(0,0,0)
+# Game a exit variable dilam 
+    
+    exit_game=False
+    game_over=False
+    snake_position_x=30
+    snake_position_y=50
+    snake_size=20
+    fps=30
+    velocity_x=5
+    velocity_y=0
+    food_position_x=random.randint(0,800)
+    food_position_y=random.randint(50,500)
+    food_size=20
+    score= 0
+    font=pygame.font.SysFont(None,55)
+    snake_list=[]
+    snake_len=1
+    # score display dhakanor jono
+    def screen_text(text,color,x,y):
+        text_screen=font.render(text,True,color)
+        gameWindow.blit(text_screen,[x,y])
+
+    # snake head+ body barabo
+    def snake_body(gameWindow,color,snake_list,snake_size):
+        for x,y in snake_list:
+            pygame.draw.rect(gameWindow,color,[x, y, snake_size, snake_size])
+
+        
+    while not exit_game:
+        if game_over:
+            text_over=font.render("Game Over. TO play again please prss Enter",True,black)
+            gameWindow.blit(text_over,[60,screen_height/2])
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit_game= True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        game_loop()
+
+
+        else:
+
+            for event in pygame.event.get():
+                if event.type==pygame.KEYDOWN:
+                    if event.key == pygame. K_RIGHT:
+                        snake_position_x= snake_position_x +5
+                        velocity_x=5
+                        velocity_y=0
+                    if event.key == pygame.K_LEFT:
+                        snake_position_x=snake_position_x-5
+                        velocity_x=-5
+                        velocity_y=0
+                    if event.key == pygame.K_UP:
+                        snake_position_y=snake_position_y-5
+                        velocity_y=-5
+                        velocity_x=0
+                    if event.key == pygame.K_DOWN:
+                        snake_position_y=snake_position_y+5
+                        velocity_y=5
+                        velocity_x=0
+
+                if event.type == pygame.QUIT:
+                    exit_game= True 
+                    
+            
+            
+            # game screen white color diya fill korlam 
+            gameWindow.fill(white)
+
+            #snake a head
+            head=[]
+            head.append(snake_position_x)
+            head.append(snake_position_y)
+            snake_list.append(head)
+            snake_body(gameWindow, black,snake_list,snake_size )
+
+            # food khabo
+            if abs(food_position_x-snake_position_x)<6 and abs(food_position_y-snake_position_y)<6:
+                score +=1
+                snake_len +=5
+                
+                food_position_x=random.randint(0,800)
+                food_position_y=random.randint(50,500)
+
+            # snake len mainten
+            if len(snake_list)>snake_len:
+                del(snake_list[0])
+
+            #snake k run korabo
+            snake_position_x=snake_position_x+ velocity_x
+            snake_position_y=snake_position_y+velocity_y
+
+            #food
+            pygame.draw.rect(gameWindow,red,[food_position_x,food_position_y,food_size,food_size])
+
+            #function call
+            screen_text("Score= "+ str(score), red, 5,5)
+
+            #side a lagle game stop
+            if (snake_position_x>900) or (snake_position_x<1):
+                game_over=True
+            if (snake_position_y>600) or (snake_position_y<1):
+                game_over=True
+            # nijar body te lege gele
+
+            if head in snake_list[:-1]:
+                game_over=True
+        
+        #Poti bar game screen tak update korlam
+        pygame.display.update()
+        clock.tick(fps)
+
+    # pygame program quit korlam
+    pygame.quit()
+    quit()
+game_loop()
